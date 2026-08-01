@@ -1,0 +1,211 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="{% static 'images/logo1.ico' %}">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2750353117163629"
+     crossorigin="anonymous"></script>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: '#1d4ed8'
+            }
+          }
+        }
+      }
+    </script>
+
+    <title>{% block title %} Bienvenue au blog {% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Blog Mayooka : actualités, idées et inspiration.{% endblock %}">
+  {% block canonical_link %}{% endblock %}
+  {% block seo_open_graph %}{% endblock %}
+
+    
+
+
+     <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-N6FD94M5');</script>
+  <!-- End Google Tag Manager -->
+
+  </head>
+  <body>
+
+        <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N6FD94M5"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
+    <nav class="sticky top-0 z-40 border-b border-slate-700/80 bg-slate-950/95 text-white shadow-xl backdrop-blur">
+      <div class="mx-auto max-w-7xl px-4 py-3">
+        <div class="flex items-center justify-between gap-3 lg:gap-4">
+          <a class="group inline-flex items-center gap-2 rounded px-2 py-1 transition hover:bg-white/10" href="/">
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-cyan-400 shadow-[0_0_14px_2px_rgba(34,211,238,0.7)]"></span>
+            <span class="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-lg font-semibold tracking-wide text-transparent">Mayooka</span>
+          </a>
+
+          <button id="nav-toggle" type="button" class="inline-flex items-center gap-2 rounded border border-slate-600 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-800 md:hidden" aria-expanded="false" aria-controls="nav-menu">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+            Menu
+          </button>
+
+          <form action="/search/" class="hidden items-center gap-2 md:flex" method="get">
+            <div class="relative w-64">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="m20 20-3.5-3.5"></path>
+                </svg>
+              </span>
+              <input type="search" class="w-full rounded border border-slate-600 bg-slate-900/90 py-2 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30" name="q" placeholder="Rechercher un article" aria-label="Search" required>
+            </div>
+            <button class="rounded bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" type="submit">Recherche</button>
+          </form>
+        </div>
+
+        <div id="nav-menu" class="mt-3 hidden border-t border-slate-800 pt-3 md:mt-0 md:block md:border-0 md:pt-0">
+          <div class="flex flex-col gap-2 text-sm md:flex-row md:flex-wrap md:items-center">
+            <a class="rounded px-3 py-2 text-slate-200 transition hover:bg-white/10 hover:text-white" href="/">Accueil</a>
+
+            <details class="group md:relative">
+              <summary class="list-none cursor-pointer rounded px-3 py-2 text-slate-200 transition hover:bg-white/10 hover:text-white">Catégories</summary>
+              <div class="mt-1 rounded border border-slate-700 bg-slate-900 p-1 text-slate-200 md:absolute md:left-0 md:mt-2 md:w-56 md:shadow-2xl">
+                {% for category in category_list %}
+                  <a class="block rounded px-3 py-2 text-sm transition hover:bg-slate-800 hover:text-white" href="/category/{{ category.name}}">
+                    {{ category.name|title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </details>
+
+            <a class="rounded border border-cyan-500/80 px-3 py-2 text-cyan-300 transition hover:bg-cyan-500 hover:text-slate-950" href="{% url 'accounts:register' %}">Créer un compte</a>
+            {% if request.user.is_authenticated %}
+              <a class="rounded border border-slate-600 px-3 py-2 text-slate-200 transition hover:bg-slate-800" href="{% url 'blog:saved_posts' %}">Enregistrés</a>
+              <a class="rounded border border-slate-600 px-3 py-2 text-slate-200 transition hover:bg-slate-800" href="{% url 'accounts:profile' %}">Profil</a>
+            {% else %}
+              <a class="rounded border border-slate-600 px-3 py-2 text-slate-200 transition hover:bg-slate-800" href="{% url 'accounts:login' %}">Connexion</a>
+            {% endif %}
+            <a class="rounded border border-amber-400/80 px-3 py-2 text-amber-300 transition hover:bg-amber-400 hover:text-slate-950" href="{% url 'accounts:newsletter' %}">Newsletter</a>
+          </div>
+
+          <form action="/search/" class="mt-3 flex items-center gap-2 md:hidden" method="get">
+            <div class="relative w-full">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="m20 20-3.5-3.5"></path>
+                </svg>
+              </span>
+              <input type="search" class="w-full rounded border border-slate-600 bg-slate-900/90 py-2 pl-9 pr-3 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30" name="q" placeholder="Rechercher un article" aria-label="Search" required>
+            </div>
+            <button class="rounded bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400" type="submit">OK</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+      {% comment %} <div class="bg-slate-50 py-8 text-center text-blue-700"><h1 class="text-2xl font-semibold">Cliquez au moins sur une Pub pour aider</h1></div> {% endcomment %}
+      {% block content %}
+      
+      {% endblock %}
+
+      <footer class="border-t border-slate-200 bg-white py-8">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
+          <p>© 2026 Mayooka. Tous droits réservés.</p>
+          <div class="flex flex-wrap items-center gap-4">
+            <a class="transition hover:text-blue-700" href="/">Accueil</a>
+            <a class="transition hover:text-blue-700" href="{% url 'blog:post_search' %}">Recherche</a>
+            <a class="transition hover:text-blue-700" href="{% url 'accounts:newsletter' %}">Newsletter</a>
+            {% if request.user.is_authenticated %}
+              <a class="transition hover:text-blue-700" href="{% url 'blog:saved_posts' %}">Enregistrés</a>
+            {% endif %}
+          </div>
+        </div>
+      </footer>
+      <script>
+        (function () {
+          var toggle = document.getElementById('nav-toggle');
+          var menu = document.getElementById('nav-menu');
+
+          if (!toggle || !menu) {
+            return;
+          }
+
+          toggle.addEventListener('click', function () {
+            var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', String(!isExpanded));
+            menu.classList.toggle('hidden');
+          });
+        })();
+      </script>
+  </body>
+</html>
+
+{% comment %} <!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="jquery-3.7.1.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>{% block title %} Welcome to blog {% endblock %}</title>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Blog</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Categories
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% for category in category_list %}
+                  <a class="dropdown-item" href="/category/{{ category.name}}">
+                  {{ category.name|title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </li>
+          </ul>
+
+         
+
+            <input type="search" class="form-control mr-sm-2" name="q" placeholder="Recherche" aria-label="Search" required>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" >Recherche</button>
+          </form>
+
+        </div>
+      </nav>
+      {% block content %}
+      {% endblock %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html> {% endcomment %}

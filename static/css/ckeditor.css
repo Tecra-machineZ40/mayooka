@@ -1,0 +1,11 @@
+.ck-editor__editable_inline {
+  min-height: 360px;
+}
+
+.ck.ck-toolbar {
+  border-radius: 0;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+  border-radius: 0;
+}

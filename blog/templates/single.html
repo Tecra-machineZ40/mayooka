@@ -1,0 +1,254 @@
+﻿{% extends "base.html" %}
+
+{% block title %}
+{{ post.seo_title|default:post.title }}
+{% endblock %}
+
+{% block meta_description %}
+{{ post.seo_description|default:post.excerpt|default:post.title|striptags|truncatechars:160 }}
+{% endblock %}
+
+{% block canonical_link %}
+<link rel="canonical" href="{% if post.canonical_url %}{{ post.canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+{% endblock %}
+
+{% block seo_open_graph %}
+<meta property="og:title" content="{{ post.seo_title|default:post.title }}">
+<meta property="og:description" content="{{ post.seo_description|default:post.excerpt|default:post.title|striptags|truncatechars:160 }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{{ request.build_absolute_uri|cut:request.get_full_path }}{{ post.image.url }}">
+{% endblock %}
+
+{% block content %}
+{% load mptt_tags %}
+
+<div class="bg-slate-50 py-12">
+  <div class="mx-auto max-w-5xl px-4 lg:px-8">
+    <article class="overflow-hidden rounded-none border border-slate-200 bg-white shadow-sm">
+      <img class="h-72 w-full object-cover" src="{{ post.image.url }}" alt="{{ post.image_alt|default:post.title }}">
+      <div class="p-8 md:p-10">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
+          <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            <span class="rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700">{{ post.category }}</span>
+            <span>{{ post.publish|date:"d M Y" }}</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="shareToggle" class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">Partager</button>
+            <form method="post" class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="like">
+              <button type="submit" class="rounded border {% if liked %}border-blue-700 bg-blue-700 text-white{% else %}border-slate-300 text-slate-700 hover:bg-slate-100{% endif %} px-3 py-2 text-sm font-medium transition">
+                {% if liked %}J’aime ✓{% else %}J’aime{% endif %}
+              </button>
+            </form>
+            <form method="post" class="inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="save">
+              <button type="submit" class="rounded border {% if saved %}border-blue-700 bg-blue-700 text-white{% else %}border-slate-300 text-slate-700 hover:bg-slate-100{% endif %} px-3 py-2 text-sm font-medium transition">
+                {% if saved %}Enregistré{% else %}Enregistrer{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="mt-6 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+          <span class="rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700">{{ post.category }}</span>
+          <span>{{ post.publish|date:"d M Y" }}</span>
+        </div>
+        <h1 class="mt-4 text-3xl font-semibold tracking-tight text-slate-900">{{ post.title }}</h1>
+        <div class="prose prose-slate mt-8 max-w-none text-base leading-8 text-slate-700">{{ post.content|safe }}</div>
+      </div>
+    </article>
+
+    {% if related_posts %}
+    <section class="mt-8 rounded-none border border-slate-200 bg-white p-8 shadow-sm">
+      <h3 class="text-xl font-semibold text-slate-900">Autres articles à découvrir</h3>
+      <div class="mt-6 grid gap-4 md:grid-cols-3">
+        {% for related_post in related_posts %}
+          <a href="{{ related_post.get_absolute_url }}" class="rounded border border-slate-200 p-4 transition hover:border-blue-700 hover:bg-blue-50">
+            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">{{ related_post.category }}</div>
+            <h4 class="mt-2 text-base font-semibold text-slate-900">{{ related_post.title|truncatechars:55 }}</h4>
+            <p class="mt-2 text-sm text-slate-600">{{ related_post.excerpt|truncatechars:90 }}</p>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="mt-8 rounded-none border border-slate-200 bg-white p-8 shadow-sm">
+      {% with allcomments.count as total_comments %}
+      <h2 class="text-2xl font-semibold text-slate-900">{{ total_comments }} commentaire{{ total_comments|pluralize }}</h2>
+      {% endwith %}
+
+      <div class="mt-6 space-y-4">
+        {% if comments %}
+          {% recursetree comments %}
+            <div id="{{ node.id }}" class="rounded border border-slate-200 p-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="font-medium text-slate-900">Par {{ node.name }}</div>
+                <div class="text-sm text-slate-500">{{ node.publish }}</div>
+              </div>
+              <p class="mt-2 text-sm leading-7 text-slate-700">{{ node.content }}</p>
+              <button type="button" class="mt-3 rounded border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100" onclick="myFonction({{ node.id }})">Répondre</button>
+              {% if not node.is_leaf_node %}
+                <div class="mt-4 ml-4 border-l border-slate-200 pl-4">{{ children }}</div>
+              {% endif %}
+            </div>
+          {% endrecursetree %}
+        {% else %}
+          <p class="text-sm text-slate-600">Aucun commentaire pour l’instant.</p>
+        {% endif %}
+      </div>
+
+      {% if comments.has_other_pages %}
+      <div class="mt-6 flex flex-wrap gap-2">
+        {% if comments.has_previous %}
+          <a class="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" href="?page={{ comments.previous_page_number }}">Précédent</a>
+        {% endif %}
+        {% for num in comments.paginator.page_range %}
+          <a class="rounded border border-slate-300 px-3 py-2 text-sm {% if comments.number == num %}bg-blue-700 text-white{% else %}text-slate-700 hover:bg-slate-100{% endif %}" href="?page={{ num }}">{{ num }}</a>
+        {% endfor %}
+        {% if comments.has_next %}
+          <a class="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100" href="?page={{ comments.next_page_number }}">Suivant</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="mt-8 border-t border-slate-200 pt-8">
+        <h3 class="text-xl font-semibold text-slate-900">Laisser un commentaire</h3>
+        <form id="myForm" method="post" class="mt-4 space-y-4">
+          {{ comment_form.as_p }}
+          {% csrf_token %}
+          <button type="submit" class="rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800">Publier</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="shareModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 px-4 transition-opacity duration-200">
+  <div class="w-full max-w-md scale-95 rounded-none border border-slate-200 bg-white p-6 shadow-2xl transition-transform duration-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Partager cet article</h3>
+        <p class="mt-1 text-sm text-slate-600">Choisissez une option pour transmettre cette lecture.</p>
+      </div>
+      <button type="button" id="closeShareModal" class="text-sm text-slate-600 transition hover:text-slate-900">Fermer</button>
+    </div>
+    <div class="mt-6 space-y-2">
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-sm">
+        <span class="flex items-center gap-2"><svg class="h-4 w-4 text-blue-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 22v-8.5h2.7l.4-3.2h-3.1V4.3c0-.9.2-1.6 1.6-1.6h1.7V.1C16.3.1 15.1 0 13.8 0c-2.4 0-4.1 1.5-4.1 4.2v2.3H7v3.2h2.7V22h3.8z"/></svg> Facebook</span>
+        <span class="text-slate-400">→</span>
+      </a>
+      <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-sm">
+        <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.4 22h-5.9l-4.7-6.1L7.3 22H4.2l7.2-8.2L.6 2h6l4.2 5.5L18.9 2z"/></svg> Twitter / X</span>
+        <span class="text-slate-400">→</span>
+      </a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-sm">
+        <span class="flex items-center gap-2"><svg class="h-4 w-4 text-blue-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.9 8.2A1.8 1.8 0 1 0 6.9 4.6a1.8 1.8 0 0 0 0 3.6zM5.2 9.7h3.4V19H5.2V9.7zm5.7 0h3.3v1.3h.1c.5-.9 1.6-1.8 3.3-1.8 3.6 0 4.2 2.3 4.2 5.4V19h-3.4v-8.4c0-2-.1-4.5-2.8-4.5-2.8 0-3.2 2.2-3.2 4.4V19H10.9V9.7z"/></svg> LinkedIn</span>
+        <span class="text-slate-400">→</span>
+      </a>
+      <a href="mailto:?subject={{ post.title|urlencode }}&body={{ post.title }} - {{ request.build_absolute_uri }}" class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-sm">
+        <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg> Partager par email</span>
+        <span class="text-slate-400">→</span>
+      </a>
+      <button type="button" id="copyShareButton" onclick="copyShareLink()" class="flex w-full items-center justify-between rounded border border-slate-200 px-3 py-2 text-left text-sm text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-sm">
+        <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 8h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><path d="M6 6h8a2 2 0 0 1 2 2v8"/></svg> Copier le lien</span>
+        <span id="copyShareIcon" class="text-slate-400">⧉</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formExit() {
+    const form = document.getElementById('newForm');
+    if (form) form.remove();
+  }
+
+  function copyShareLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const button = document.getElementById('copyShareButton');
+      const icon = document.getElementById('copyShareIcon');
+      if (button && icon) {
+        button.classList.remove('hover:bg-slate-50');
+        button.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-700');
+        icon.textContent = '✓';
+        setTimeout(() => {
+          button.classList.remove('bg-blue-50', 'border-blue-300', 'text-blue-700');
+          button.classList.add('hover:bg-slate-50');
+          icon.textContent = '⧉';
+        }, 1800);
+      }
+    });
+  }
+
+  const shareToggle = document.getElementById('shareToggle');
+  const shareModal = document.getElementById('shareModal');
+  const closeShareModal = document.getElementById('closeShareModal');
+
+  if (shareToggle && shareModal) {
+    shareToggle.addEventListener('click', () => {
+      shareModal.classList.remove('hidden');
+      shareModal.classList.add('flex');
+      requestAnimationFrame(() => {
+        shareModal.querySelector('div[class*="max-w-md"]').classList.remove('scale-95');
+        shareModal.querySelector('div[class*="max-w-md"]').classList.add('scale-100');
+      });
+    });
+  }
+
+  if (closeShareModal && shareModal) {
+    closeShareModal.addEventListener('click', () => {
+      const panel = shareModal.querySelector('div[class*="max-w-md"]');
+      if (panel) {
+        panel.classList.remove('scale-100');
+        panel.classList.add('scale-95');
+      }
+      setTimeout(() => {
+        shareModal.classList.add('hidden');
+        shareModal.classList.remove('flex');
+      }, 150);
+    });
+  }
+
+  if (shareModal) {
+    shareModal.addEventListener('click', (event) => {
+      if (event.target === shareModal) {
+        const panel = shareModal.querySelector('div[class*="max-w-md"]');
+        if (panel) {
+          panel.classList.remove('scale-100');
+          panel.classList.add('scale-95');
+        }
+        setTimeout(() => {
+          shareModal.classList.add('hidden');
+          shareModal.classList.remove('flex');
+        }, 150);
+      }
+    });
+  }
+
+  function myFonction(id) {
+    const existing = document.getElementById('newForm');
+    if (existing) existing.remove();
+
+    const target = document.getElementById(id);
+    target.insertAdjacentHTML('beforebegin', `
+      <form id="newForm" class="mt-3 space-y-3 rounded border border-slate-200 bg-slate-50 p-4" method="post">
+        <div class="flex items-center justify-between">
+          <h4 class="text-base font-semibold text-slate-900">Répondre</h4>
+          <button type="button" class="text-sm text-slate-600 hover:text-slate-900" onclick="formExit()">Fermer</button>
+        </div>
+        <input type="text" name="name" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" maxlength="250" required="" placeholder="Votre nom">
+        <input type="hidden" name="parent" value="${id}">
+        <input type="text" name="email" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" maxlength="250" required="" placeholder="Votre email">
+        <textarea name="content" rows="4" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" required="" placeholder="Votre réponse..."></textarea>
+        {% csrf_token %}
+        <button type="submit" class="rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Publier</button>
+      </form>
+    `);
+  }
+
+  document.getElementById('myForm')?.reset();
+</script>
+{% endblock %}

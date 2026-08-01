@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}
+Recherche
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl px-4 py-8">
+
+{% if q %}
+<h1 class="text-2xl font-semibold text-slate-900">Résultats pour "{{ q }}"
+
+    {% if c %}
+    <span class="text-base font-normal text-slate-600">dans la catégorie "{{ c }}"</span>
+    {% endif %}
+
+</h1>
+<p class="mt-2 text-sm text-slate-600">
+
+    {% with results.count as total_results %}
+    {{ total_results }} résultat{{total_results|pluralize }}
+    {% endwith %}
+</p>
+
+<div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+  {% for post in results %}
+    <a class="group block overflow-hidden rounded-none border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md" href="{{post.get_absolute_url}}">
+      <img class="h-48 w-full object-cover" src="{{post.image.url}}" alt="{{post.title}}">
+      <div class="p-5">
+        <h2 class="text-lg font-semibold text-slate-900">{{post.title|truncatechars:50}}</h2>
+        <p class="mt-2 text-sm text-slate-600">{{post.excerpt|truncatechars:80}}…</p>
+      </div>
+    </a>
+  {% empty %}
+    <p class="text-sm text-slate-600">Il n'y a pas de résultat pour cette recherche.</p>
+  {% endfor %}
+</div>
+
+<p class="mt-8">
+  <a href="{% url 'blog:post_search' %}" class="rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800" role="button">Nouvelle recherche</a>
+</p>
+
+{% else %}
+
+<form class="mt-6 rounded border border-slate-200 bg-white p-4 shadow-sm" method="get">
+  {% csrf_token %}
+  <div class="relative grid gap-4 md:grid-cols-[2fr_1fr_auto]">
+    {{ form.q }}
+    {{ form.c }}
+    <input class="rounded bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800" type="submit" value="Recherche">
+    <ul id="suggestionsList" class="absolute left-0 right-0 top-full z-20 mt-2 hidden max-h-72 overflow-auto rounded-none border border-slate-200 bg-white shadow-lg" role="listbox"></ul>
+  </div>
+</form>
+
+{% endif %}
+</div>
+
+<script>
+  const input = document.getElementById('id_q');
+  const suggestionsList = document.getElementById('suggestionsList');
+
+  if (input && suggestionsList) {
+    input.addEventListener('input', function () {
+      const query = this.value.trim();
+      if (!query) {
+        suggestionsList.innerHTML = '';
+        suggestionsList.classList.add('hidden');
+        return;
+      }
+
+      fetch('{% url "blog:post_search" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: new URLSearchParams({
+          ss: query,
+          action: 'post',
+          csrfmiddlewaretoken: document.querySelector('input[name=csrfmiddlewaretoken]').value,
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        const suggestions = data.search_string || [];
+        if (!suggestions.length) {
+          suggestionsList.innerHTML = '<li class="px-4 py-3 text-sm text-slate-600">Aucun résultat</li>';
+          suggestionsList.classList.remove('hidden');
+          return;
+        }
+
+        suggestionsList.innerHTML = suggestions.map(item => `
+          <li>
+            <a href="${item.url}" class="block px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-50">
+              <span class="font-medium text-slate-900">${item.title}</span>
+            </a>
+          </li>
+        `).join('');
+        suggestionsList.classList.remove('hidden');
+      })
+      .catch(() => {
+        suggestionsList.innerHTML = '';
+        suggestionsList.classList.add('hidden');
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!suggestionsList.contains(event.target) && event.target !== input) {
+        suggestionsList.classList.add('hidden');
+      }
+    });
+  }
+</script>
+{% endblock %}

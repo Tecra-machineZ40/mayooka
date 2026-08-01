@@ -1,0 +1,31 @@
+{% extends "../base/base.html" %}
+{% block title %}Newsletter{% endblock %}
+{% block content %}
+<div class="min-h-screen bg-slate-50 py-12">
+  <div class="mx-auto max-w-2xl px-4">
+    <div class="rounded-none border border-slate-200 bg-white p-8 shadow-sm">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">Newsletter</p>
+      <h1 class="mt-2 text-2xl font-semibold text-slate-900">Recevez les nouveaux articles par e-mail</h1>
+      <p class="mt-3 text-sm text-slate-600">Inscrivez votre adresse pour être notifié dès qu’un nouvel article est publié.</p>
+
+      <form class="mt-6 space-y-4" action="." method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {{ form.errors.email }}
+        </div>
+        {% endif %}
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.name.label }}</label>
+          {{ form.name }}
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.email.label }}</label>
+          {{ form.email }}
+        </div>
+        <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800">S’abonner</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

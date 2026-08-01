@@ -1,0 +1,50 @@
+{% extends "../base/base.html" %}
+{% block title %} Connexion {% endblock %}
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<script>
+    window.location.href = '{% url "accounts:profile" %}';
+</script>
+{% endif %}
+
+<div class="min-h-screen bg-slate-100">
+  <div class="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-10">
+    <div class="grid w-full overflow-hidden rounded-none border border-slate-200 bg-white shadow-sm md:grid-cols-2">
+      <div class="flex items-center justify-center p-8 md:p-10">
+        <form action="{% url 'login' %}" class="w-full max-w-md space-y-4" method="post">
+          {% csrf_token %}
+          <div class="space-y-1">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">Connexion</p>
+            <h1 class="text-2xl font-semibold text-slate-900">Bienvenue</h1>
+            <p class="text-sm text-slate-600">Accédez à votre espace et continuez la lecture.</p>
+          </div>
+
+          {% if form.errors %}
+          <div class="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            Identifiant ou mot de passe incorrect.
+          </div>
+          {% endif %}
+
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.username.label }}</label>
+            {{ form.username }}
+          </div>
+
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">{{ form.password.label }}</label>
+            {{ form.password }}
+          </div>
+
+          <button class="w-full rounded bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800" type="submit">Se connecter</button>
+
+          <p class="text-center text-sm text-slate-600">
+            <a class="text-blue-700 hover:underline" href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+          </p>
+        </form>
+      </div>
+      <div class="hidden bg-cover bg-center md:block" style="background-image: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=80');"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
