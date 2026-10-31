@@ -8,25 +8,34 @@ ChronicleSaaS is not just a blog—it is a **high-conversion editorial Content M
 
 ### 📰 1. Dynamic Editorial Index & Discovery Hub
 *The primary conversion touchpoint. A modern editorial layout that mathematically prioritizes content hierarchies to maximize user stay-time.*
-![Homepage Interface](./screenshots/01_homepage.png)
+![Homepage Interface](./screenshots/ma1.jpg)
+![Homepage Interface](./screenshots/ma2.jpg)
+![Homepage Interface](./screenshots/ma3.jpg)
+![Homepage Interface](./screenshots/ma4.jpg)
 - **Business Impact:** Drives average session duration upwards by surfacing featured, recent, and trending posts automatically.
 - **Product Highlight:** Integrated an asynchronous unifed search bar that feeds predictive autocomplete suggestions in real-time, eliminating navigation friction.
 
 ### 💬 2. EngageCore™ — Multi-Tier Community Interaction Engine
 *An advanced social layer engineered to break reader passivity and foster high recurring user return rates.*
-![Engagement Interface](./screenshots/02_engagement.png)
+![Engagement Interface](./screenshots/ma5.jpg)
+![Engagement Interface](./screenshots/ma6.jpg)
+![Engagement Interface](./screenshots/ma7.jpg)
 - **Business Impact:** Multiplies community retention metrics through nested discussion tracks and automated email alerts.
 - **Product Highlight:** Dual-velocity interaction logic—anonymous visitors utilize ephemeral session-based liking, while authenticated members get permanent database-backed bookmark storage.
 
 ### 🔐 3. Member Portal & Gated Onboarding Funnel
 *A secure, hermetic authentication registry designed to safeguard user data and build qualified marketing leads.*
-![Member Portal](./screenshots/03_member_zone.png)
+![Engagement Interface](./screenshots/ma8.jpg)
+![Engagement Interface](./screenshots/ma9.jpg)
+![Engagement Interface](./screenshots/ma10.jpg)
 - **Business Impact:** Constructs a clean, exploitable database of active users ready for high-ROI targeted newsletter campaigns.
 - **Product Highlight:** Accounts are strictly locked behind an email token activation protocol, complete with self-service password reset and avatar management modules.
 
 ### ✍️ 4. PubEngine™ — Editorial CMS Control Panel & SEO Studio
 *A tailored administrative dashboard empowering non-technical copywriters to operate the entire digital brand without developer dependency.*
-![Admin CMS Panel](./screenshots/04_admin_cms.png)
+![Engagement Interface](./screenshots/ma11.jpg)
+![Engagement Interface](./screenshots/ma12.jpg)
+
 - **Business Impact:** Eliminates publishing bottlenecks and guarantees every article is structurally and metadata-optimized for Google indexing prior to launch.
 - **Product Highlight:** Features a native Rich-Text editor, automatic canonical URL generation, OpenGraph metadata parsing for social shares, and hardcoded pre-flight SEO checklists.
 
